@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import customersRouter from "./routes/customer.route";
 
 require("dotenv").config();
 const cors = require("cors");
@@ -17,22 +18,9 @@ app.listen(PORT, () => {
 
 
 
-// Create an API endpoint
+// // Create customer API endpoint
 
-app.get("/customers", async (req:Request, res:Response) => {
-  const customers = [
-    { name: "John Doe", email: "john.doe@example.com", phone: "+1234567890" },
-    {
-      name: "Joel Smith",
-      email: "joel.smith@example.com",
-      phone: "+0987654321",
-    },
-    {
-      name: "tybans",
-      email: "tybansh@example.com",
-      phone: "912827347",
-    },
-  ];
+app.use("/api/v1", customersRouter)
 
-  return res.status(200).json(customers);
-})
+// app.get("/api/v1/customers", getCustomers )
+// app.get("/api/v2/customers", getV2Customers)
