@@ -1,17 +1,85 @@
 import { db } from "@/db/db";
 import { Request, Response } from "express";
 
-export async function createCustomers(req: Request, res: Response) {
+export async function createCustomer(req: Request, res: Response) {
 
-  const { name, email, phone } = req.body
+  const { 
+    customerType,
+    firstName,
+    lastName,
+    phone,
+    gender,
+    country,
+    location,
+    maxCreditLimit,
+    maxCreditDays,
+    taxPin,
+    dob,
+    email,
+    nationalIdNumber 
+  } = req.body
   try {
-    const newCustomer = await db.customer.create({
-      data: {
-        name,
-        email,
-        phone
+    // Check if email, phone or nationalIdNumber are unique
+    if (email) {
+      const existingCustomerByEmail = await db.customer.findUnique({
+        where: {
+          email: email
+        }
+      })
+      if (existingCustomerByEmail) {
+        return res.status(409).json({
+          message: `Customer with this email ${email} already exists`,
+          data: null
+        })
+
+      }
+    }
+    const existingCustomerByPhone = await db.customer.findUnique({
+      where: {
+        phone: phone
       }
     })
+    if (existingCustomerByPhone) {
+      return res.status(409).json({
+        message: `Customer with this Phone Number ${phone} already exists`,
+        data: null
+      })
+
+    }
+    if (nationalIdNumber) {
+      const existingCustomerByNationalId = await db.customer.findUnique({
+        where: {
+          nationalIdNumber: nationalIdNumber
+        }
+      })
+      if (existingCustomerByNationalId) {
+        return res.status(409).json({
+          message: `Customer with this National ID Number ${nationalIdNumber} already exists`,
+          data: null
+        })
+
+      }
+    }
+
+    // Create the Customer
+    const newCustomer = await db.customer.create({
+      data: {
+        customerType,
+        firstName,
+        lastName,
+        phone,
+        gender,
+        country,
+        location,
+        maxCreditLimit,
+        maxCreditDays,
+        taxPin,
+        dob,
+        email,
+        nationalIdNumber
+      }
+    })
+    // Return the created customer
     return res.status(201).json(newCustomer)
   } catch (error) {
     console.log(error);
@@ -21,43 +89,17 @@ export async function createCustomers(req: Request, res: Response) {
 export async function getCustomers(req: Request, res: Response) {
   try {
     const customers = await db.customer.findMany({
-    orderBy: {
-      createdAt: 'desc' 
-    }
-  })
-  return res.status(200).json(customers)
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+    return res.status(200).json(customers)
   } catch (error) {
     console.log(error);
-    
-  }
-  
-  // const customers = [
-  //   {
-  //     id: 1,
-  //     name: "John Doe",
-  //     email: "john.doe@example.com",
-  //     phone: "+1234567890"
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Joel Smith",
-  //     email: "joel.smith@example.com",
-  //     phone: "+0987654321",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "tybans",
-  //     email: "tybansh@example.com",
-  //     phone: "912827347",
-  //   },
-  //   {
-  //     name: "tybans",
-  //     email: "tybansh@example.com",
-  //     phone: "912827347",
-  //   },
-  // ];
 
-  // return res.status(200).json(customers);
+  }
+
+  
 }
 
 
@@ -69,9 +111,13 @@ export async function getCustomerById(req: Request, res: Response) {
         id: id
       }
     })
+
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found", data: null });
+    }
     return res.status(200).json(customer)
   } catch (error) {
     console.log(error);
-    
+
   }
 }

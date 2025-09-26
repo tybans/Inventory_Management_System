@@ -15,10 +15,154 @@ datasource db {
 }
 
 model Customer {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  phone     String
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  customerType     CustomerType
+  firstName        String
+  lastName         String
+  phone            String       @unique
+  gender           Gender
+  country          String
+  location         String
+  maxCreditLimit   Float
+  maxCreditDays    Int
+  taxPin           String?
+  dob              DateTime?
+  email            String?      @unique
+  nationalIdNumber String?      @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum CustomerType {
+  RETAIL
+  WHOLESALE
+  DISTRIBUTER
+  OTHER
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  username  String    @unique
+  password  String
+  firstName String
+  lastName  String
+  phone     String    @unique
+  dob       DateTime? //Optional
+  gender    Gender
+  image     String? //Optional
+  role      Role      @default(ATTENDANT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  shops     Shop[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  ADMIN
+  ATTENDANT
+}
+
+model Shop {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  slug         String   @unique // so that we don't create the same shop twice
+  location     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  adminId      String   @db.ObjectId
+  admin        User     @relation(fields: [adminId], references: [id])
+  attendantIds String[] @db.ObjectId
+}
+
+model Supplier {
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  supplierType      SupplierType
+  name              String
+  contactPerson     String
+  phone             String       @unique
+  email             String?      @unique
+  location          String
+  country           String
+  website           String?
+  taxPin            String?
+  regNumber         String?      @unique
+  bankAccountNumber String?
+  bankName          String?
+  paymentTerms      String?
+  logo              String?      @default("")
+  rating            Float?
+  notes             String?
+  Product           Product[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+enum SupplierType {
+  MANUFACTURER
+  DISTRIBUTER
+  WHOLESALER
+  RETAILER
+  OTHER
+}
+
+model Unit {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  abbreviation String
+  slug         String    @unique
+  products     Product[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Brand {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  batchNumber String?
+  barCode     String?  @unique
+  image       String? @default("")
+  tax         Int?
+  alertQty    Int
+  stockQty    Int
+  price       Int
+  buyingPrice Int?
+  sku         String   @unique
+  productCode String   @unique
+  slug        String   @unique
+  supplierId  String   @db.ObjectId
+  unitId      String   @db.ObjectId
+  brandId     String   @db.ObjectId
+  categoryId  String   @db.ObjectId
+  expiryDate  DateTime
+  unit        Unit     @relation(fields: [unitId], references: [id])
+  brand       Brand    @relation(fields: [brandId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  supplier    Supplier @relation(fields: [supplierId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
