@@ -1,18 +1,14 @@
-// import jwt, { JwtPayload } from "jsonwebtoken";
-import * as jwt from "jsonwebtoken";
+import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
  
-interface SignOption {
-  expiresIn?: string | number;
-}
-const DEFAULT_SIGN_OPTION: SignOption = {
+const DEFAULT_SIGN_OPTION: SignOptions = {
   expiresIn: "1h",
 };
 export function generateAccessToken(
-  payload: jwt.JwtPayload,
-  options: SignOption = DEFAULT_SIGN_OPTION
+  payload: JwtPayload,
+  options: SignOptions = DEFAULT_SIGN_OPTION
 ) {
-  const secret = process.env.SECRET_KEY as string
+  const secret = process.env.SECRET_KEY;
   // Use this command to generate SECRET_KEY: openssl rand -base64 32
-  const token = jwt.sign(payload, secret, options);
+  const token = jwt.sign(payload, secret!, options);
   return token;
 }
