@@ -28,15 +28,15 @@ app.listen(PORT, () => {
 
 // // Create customer API endpoint
 
-app.use("/api/v1", customersRouter) 
-app.use("/api/v1", usersRouter)
-app.use("/api/v1", shopRouter)
-app.use("/api/v1", supplierRouter)
-app.use("/api/v1", loginRouter)
-app.use("/api/v1", unitRouter)
-app.use("/api/v1", brandRouter)
-app.use("/api/v1", categoryRouter)
-app.use("/api/v1", productRouter)
+app.use("/api", customersRouter) 
+app.use("/api", usersRouter)
+app.use("/api", shopRouter)
+app.use("/api", supplierRouter)
+app.use("/api", loginRouter)
+app.use("/api", unitRouter)
+app.use("/api", brandRouter)
+app.use("/api", categoryRouter)
+app.use("/api", productRouter)
 
 
 // app.get("/api/v1/customers", getCustomers )
