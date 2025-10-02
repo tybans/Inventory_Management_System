@@ -23,7 +23,9 @@ export async function createProduct(req: Request, res: Response) {
       unitId,
       brandId,
       categoryId,
-      expiryDate
+      expiryDate,
+      wholesalePrice,
+      shopId
     } = req.body
     // check if Product already exists and barCode, sku, productCode, slug are unique
     const existingProductBySlug = await db.product.findUnique({
@@ -48,7 +50,7 @@ export async function createProduct(req: Request, res: Response) {
         message: `Product with this barCode ${barCode} already exists`,
         data: null
       })
-    } 
+    }
 
     const existingProductBySku = await db.product.findUnique({
       where: {
@@ -93,7 +95,9 @@ export async function createProduct(req: Request, res: Response) {
         unitId,
         brandId,
         categoryId,
-        expiryDate
+        expiryDate,
+        wholesalePrice,
+        shopId
       }
     })
 
@@ -172,7 +176,10 @@ export async function updateProductById(req: Request, res: Response) {
     unitId,
     brandId,
     categoryId,
-    expiryDate } = req.body
+    expiryDate,
+    wholesalePrice,
+    shopId
+  } = req.body
   try {
     // If existing Product
     const existingProduct = await db.product.findUnique({
@@ -204,10 +211,10 @@ export async function updateProductById(req: Request, res: Response) {
 
     if (barCode && barCode !== existingProduct.barCode) {
       const productWithBarCode = await db.product.findUnique({
-        where: {  
+        where: {
           barCode: barCode
         }
-      })  
+      })
       if (productWithBarCode) {
         return res.status(409).json({
           data: null,
@@ -267,7 +274,9 @@ export async function updateProductById(req: Request, res: Response) {
         unitId,
         brandId,
         categoryId,
-        expiryDate
+        expiryDate,
+        wholesalePrice,
+        shopId
       }
     })
     // return the updated Product

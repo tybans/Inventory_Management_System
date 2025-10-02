@@ -1,4 +1,10 @@
-import express, { Request, Response } from "express";
+// src/index.ts
+import express from "express";
+import path from "path";
+import dotenv from "dotenv";
+import cors from "cors";
+
+// your routers
 import customersRouter from "./routes/customer.route";
 import usersRouter from "./routes/user.route";
 import shopRouter from "./routes/shop.route";
@@ -9,35 +15,42 @@ import brandRouter from "./routes/brand.route";
 import categoryRouter from "./routes/category.route";
 import productRouter from "./routes/products.route";
 
-require("dotenv").config();
-const cors = require("cors");
+dotenv.config();
+
 const app = express();
+app.use(cors());
 
-app.use(cors()); // Enable Cross-Origin Resource Sharing (CORS) for all routes
+// body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // <--- important for form data
 
-const PORT = process.env.PORT
+// views + static
+app.set("view engine", "ejs");
+// When running with ts-node-dev keep views inside src/views:
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "..", "public"))); // public sits at project-root/public
 
-app.use(express.json()); // Parse incoming JSON requests and make the data available in req.body
-
-app.listen(PORT, () => {
-
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Simple EJS routes (frontend pages)
+app.get("/", (req, res) => res.redirect("/login"));
+app.get("/login", (req, res) => res.render("login", { error: null }));
+app.get("/dashboard", (req, res) => res.render("dashboard"));
+app.get("/products", (req, res) => {
+  res.render("products");
 });
 
+// API routers (mount before listen)
+app.use("/api", customersRouter);
+app.use("/api", usersRouter);
+app.use("/api", shopRouter);
+app.use("/api", supplierRouter);
+app.use("/api", loginRouter);      // <-- your POST /auth/login
+app.use("/api", unitRouter);
+app.use("/api", brandRouter);
+app.use("/api", categoryRouter);
+app.use("/api", productRouter);
 
-
-// // Create customer API endpoint
-
-app.use("/api", customersRouter) 
-app.use("/api", usersRouter)
-app.use("/api", shopRouter)
-app.use("/api", supplierRouter)
-app.use("/api", loginRouter)
-app.use("/api", unitRouter)
-app.use("/api", brandRouter)
-app.use("/api", categoryRouter)
-app.use("/api", productRouter)
-
-
-// app.get("/api/v1/customers", getCustomers )
-// app.get("/api/v2/customers", getV2Customers)
+// start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

@@ -1,0 +1,29 @@
+<nav class="bg-white shadow mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16 items-center">
+      <!-- Left side nav -->
+      <div class="flex space-x-4">
+        <a href="/dashboard" class="text-gray-700 hover:text-indigo-600 font-medium">Dashboard</a>
+        <a href="/products" class="text-gray-700 hover:text-indigo-600 font-medium">Products</a>
+      </div>
+
+      <!-- Right side nav -->
+      <div class="flex items-center space-x-4">
+        <span id="navUsername" class="text-gray-700 font-medium"></span>
+        <button id="logoutBtn" class="px-3 py-1 bg-red-500 text-white rounded">Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Fill username from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (user) {
+    document.getElementById("navUsername").textContent = user.username || user.email || "User";
+  }
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.clear();
+    location.href = "/login";
+  });
+</script>
