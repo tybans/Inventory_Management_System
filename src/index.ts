@@ -14,6 +14,7 @@ import unitRouter from "./routes/unit.route";
 import brandRouter from "./routes/brand.route";
 import categoryRouter from "./routes/category.route";
 import productRouter from "./routes/products.route";
+import salesRouter from "./routes/sales.route";
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use("/api", unitRouter);
 app.use("/api", brandRouter);
 app.use("/api", categoryRouter);
 app.use("/api", productRouter);
+app.use("/api", salesRouter);      // <-- sales router
 
 // start server
 const PORT = process.env.PORT || 5000;
