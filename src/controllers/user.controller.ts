@@ -264,14 +264,16 @@ export async function updateUserById(req: Request, res: Response) {
 
 export async function updateUserPasswordById(req: Request, res: Response) {
   const {id} = req.params
-  const { password } = req.body
+  const { oldPassword, newPassword } = req.body
   try {
+    // get the user
     const user = await db.user.findUnique({
       where: {
         id: id
       }
     })
     
+    // if not exist we run 404
     if (!user) {
       return res.status(404).json({
         data: null,
@@ -279,7 +281,17 @@ export async function updateUserPasswordById(req: Request, res: Response) {
       });
     }
 
-    const hashedPassword: string = await bcrypt.hash(password, 10);
+    // Check if old password matches
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        data: null,
+        error: "Old password is incorrect"
+      });
+    }
+
+    // Hash the new password and update
+    const hashedPassword: string = await bcrypt.hash(newPassword, 10);
     const updatedUser = await db.user.update({
       where: {
         id: id
